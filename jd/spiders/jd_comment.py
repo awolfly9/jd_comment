@@ -33,7 +33,7 @@ class JDSpider(Spider):
         self.product_page = '%s_page' % self.product_id
 
         self.log_dir = 'log/%s' % self.product_id
-        self.is_record_page = True
+        self.is_record_page = False
         if self.is_record_page:
             utils.make_dir(self.log_dir)
 

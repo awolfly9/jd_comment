@@ -95,3 +95,4 @@ migrations
 #*.xml
 .idea
 headers.py
+*.html
