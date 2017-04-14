@@ -25,9 +25,6 @@ class JDSpider(Spider):
     def __init__(self, name = None, **kwargs):
         super(JDSpider, self).__init__(name, **kwargs)
         self.product_id = kwargs.get('product_id', -1)
-        # self.url = 'https://item.jd.com/11478178241.html'
-        # self.url = 'https://item.jd.com/4142680.html'
-        # self.url = 'https://item.jd.com/3133859.html'
         self.log('product_id:%s' % self.product_id)
         self.item_table = 'item_%s' % self.product_id
         self.product_page = '%s_page' % self.product_id
@@ -40,65 +37,6 @@ class JDSpider(Spider):
         self.sql = SqlHelper()
         self.red = redis.StrictRedis(host = config.redis_host, port = config.redis_part, db = config.redis_db,
                                      password = config.redis_pass)
-        # self.init()
-
-    def init(self):
-        # command = (
-        #     "CREATE TABLE IF NOT EXISTS {} ("
-        #     "`id` BIGINT (15) NOT NULL AUTO_INCREMENT,"  # 商品 id
-        #     "`name` CHAR(200) NOT NULL,"  # 商品名称
-        #     "`average_score` INT(2) DEFAULT NULL,"  # 综合评分星级
-        #     "`good_count` INT(7) DEFAULT NULL ,"  # 好评数量
-        #     "`good_rate` FLOAT DEFAULT NULL,"  # 好评的比例
-        #     "`general_count` INT(4) DEFAULT NULL,"  # 中评数量
-        #     "`general_rate` FLOAT DEFAULT NULL,"  # 中评比例
-        #     "`poor_count` INT(4) DEFAULT NULL,"  # 差评数量
-        #     '`poor_rate` FLOAT DEFAULT NULL,'  # 差评比例
-        #     '`after_count` INT(5) DEFAULT NULL,'  # 追评数量
-        #     '`good_rate_style` INT(7) DEFAULT NULL,'  #
-        #     "`poor_rate_style` INT(5) DEFAULT NULL,"  #
-        #     "`general_rate_style` INT(5) DEFAULT NULL,"  #
-        #     "`comment_count` INT(7) DEFAULT NULL,"  # 总共评论数量
-        #     "`product_id` BIGINT(15) DEFAULT NULL,"  # 商品 id
-        #     "`good_rate_show` INT(3) DEFAULT NULL,"  # 显示的好评百分比
-        #     "`poor_rate_show` INT(3) DEFAULT NULL,"  # 显示的差评百分比
-        #     "`general_rate_show` INT(7) DEFAULT NULL,"  # 显示中评的百分比
-        #     "`url` TEXT NOT NULL,"  # 网站
-        #     "`save_time` TIMESTAMP NOT NULL,"  # 抓取数据的时间
-        #     "PRIMARY KEY(id)"
-        #     ") ENGINE=InnoDB".format(config.jd_item_table))
-        # self.sql.create_table(command)
-
-        command = (
-            "CREATE TABLE IF NOT EXISTS {} ("
-            "`id` BIGINT (15) NOT NULL AUTO_INCREMENT,"  # 评论的 id
-            "`content` TEXT NOT NULL,"  # 评论的内容
-            "`creation_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"  # 评论创建的时间
-            "`reply_count` INT(4) DEFAULT NULL ,"  # 回复数量
-            "`score` INT(2) DEFAULT NULL,"  # 评星
-            "`useful_vote_count` INT(5) DEFAULT NULL,"  # 其他用户觉得有用的数量
-            "`useless_vote_count` INT(4) DEFAULT NULL,"  # 其他用户觉得无用的数量
-            "`user_level_id` INT(4) DEFAULT NULL,"  # 评论用户等级的 id
-            '`user_province` CHAR(8) DEFAULT NULL,'  # 用户的省份
-            '`nickname` CHAR(20) DEFAULT NULL,'  # 评论用户的昵称
-            '`product_color` CHAR(20) DEFAULT NULL,'  # 商品的颜色
-            "`product_size` CHAR(20) DEFAULT NULL,"  # 商品的大小
-            "`user_level_name` CHAR(20) DEFAULT NULL,"  # 评论用户的等级
-            "`user_client` INT(5) DEFAULT NULL,"  # 用户评价平台
-            "`user_client_show` CHAR(20) DEFAULT NULL,"  # 用户评价平台
-            "`is_mobile` CHAR(10) DEFAULT NULL,"  # 是否是在移动端完成的评价
-            "`days` INT(3) DEFAULT NULL,"  # 购买后评论的天数
-            "`reference_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"  # 购买的时间
-            "`after_days` INT(3) DEFAULT NULL,"  # 购买后再次评论的天数
-            "`images_count` INT(3) DEFAULT NULL,"  # 评论总图片的数量
-            "`ip` CHAR(20) DEFAULT NULL,"  # 再次评论时的 ip 地址
-            "`after_content` TEXT DEFAULT NULL,"  # 再次评论的内容
-            "`save_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"  # 抓取数据的时间
-            "PRIMARY KEY(id)"
-            ") ENGINE=InnoDB".format(self.item_table))
-        self.sql.create_table(command)
-
-        utils.push_redis(self.guid, self.product_id, '开始抓取京东商城该商品的评价信息...')
 
     def start_requests(self):
         while self.red.llen(self.product_id) > 0:
